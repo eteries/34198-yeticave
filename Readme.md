@@ -1,7 +1,7 @@
 # Личный проект «YetiCave» 
 
-* Студент: [eteries](https://up.htmlacademy.ru/php/1/user/34198).
-* Наставник: `Олег Воронкович`.
+* Студент: [Сергей Яньшин](https://up.htmlacademy.ru/php/1/user/34198).
+* Наставник: [Олег Воронкович](https://htmlacademy.ru/profile/id416391).
 
 ---
 
