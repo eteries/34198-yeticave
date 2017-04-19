@@ -30,13 +30,13 @@ $user_avatar = 'img/user.jpg';
 
         <!-- показ аватара пользователя -->
 
-        <?php if ($is_auth) : ?>
+        <?php if ($is_auth): ?>
 
             <div class="user-menu__image">
-                <img src="<?php print($user_avatar); ?>" width="40" height="40" alt="Пользователь">
+                <img src="<?php echo $user_avatar; ?>" width="40" height="40" alt="Пользователь">
             </div>
             <div class="user-menu__logged">
-                <p><?php print($user_name); ?></p>
+                <p><?php echo htmlspecialchars($user_name, ENT_QUOTES); ?></p>
             </div>
 
         <?php else: ?>
@@ -50,7 +50,7 @@ $user_avatar = 'img/user.jpg';
                 </li>
             </ul>
 
-        <?php endif ?>
+        <?php endif; ?>
 
         </nav>
     </div>
