@@ -19,6 +19,9 @@ $remaining_hours = floor($remaining_minutes_total / 60);
 // 3. остаток минут
 $remaining_minutes = $remaining_minutes_total % 60;
 
+// двухзначный час
+$remaining_hours = ($remaining_hours < 10) ? '0' . $remaining_hours : $remaining_hours;
+
 // отформатированная строка из вычисленных часов:минут
 $lot_time_remaining = $remaining_hours . ':' . $remaining_minutes;
 
