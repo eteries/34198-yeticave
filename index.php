@@ -11,8 +11,17 @@ $tomorrow = strtotime('tomorrow midnight');
 // временная метка для настоящего времени
 $now = time();
 
-// далее нужно вычислить оставшееся время до начала следующих суток и записать его в переменную $lot_time_remaining
-// ...
+// расчёт оставшегося времени:
+// 1. всего до полуночи (в минутах)
+$remaining_minutes_total = ($tomorrow - $now) / 60;
+// 2. из них целых часов
+$remaining_hours = floor($remaining_minutes_total / 60);
+// 3. остаток минут
+$remaining_minutes = $remaining_minutes_total % 60;
+
+// отформатированная строка из вычисленных часов:минут
+$lot_time_remaining = $remaining_hours . ':' . $remaining_minutes;
+
 ?>
 <!DOCTYPE html>
 <html lang="ru">
