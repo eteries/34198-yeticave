@@ -3,7 +3,7 @@
 date_default_timezone_set('Europe/Moscow');
 
 // записать в эту переменную оставшееся время в этом формате (ЧЧ:ММ)
-$lot_time_remaining = "00:00";
+$lot_time_remaining = '00:00';
 
 // временная метка для полночи следующего дня
 $tomorrow = strtotime('tomorrow midnight');
@@ -19,11 +19,12 @@ $remaining_hours = floor($remaining_minutes_total / 60);
 // 3. остаток минут
 $remaining_minutes = $remaining_minutes_total % 60;
 
-// двухзначный час
+// двухзначный формат
 $remaining_hours = ($remaining_hours < 10) ? '0' . $remaining_hours : $remaining_hours;
+$remaining_minutes = ($remaining_minutes < 10) ? '0' . $remaining_minutes : $remaining_minutes;
 
 // отформатированная строка из вычисленных часов:минут
-$lot_time_remaining = $remaining_hours . ':' . $remaining_minutes;
+$lot_time_remaining = "$remaining_hours:$remaining_minutes";
 
 ?>
 <!DOCTYPE html>
