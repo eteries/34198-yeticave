@@ -7,6 +7,41 @@ $bets = [
     ['name' => 'Евгений', 'price' => 10500, 'ts' => strtotime('-' . rand(25, 50) .' hour')],
     ['name' => 'Семён', 'price' => 10000, 'ts' => strtotime('last week')]
 ];
+
+// формат даты в зависимости от прошедшего от ставки времени
+function formatDate($timestamp)
+{
+    $past_time = time() - $timestamp;
+
+    $hours = $past_time / 3600;
+    $minutes = $past_time / 60;
+
+    if ($hours > 24) {
+        return date('d.m.y в h:j', $timestamp);
+    } elseif ($hours < 1) {
+        return $minutes . ' ' . getDeclension($minutes, 'минуту', 'минуты', 'минут') . ' назад';
+    } else {
+        return $hours . ' ' . getDeclension($hours, 'час', 'часа', 'часов') . ' назад';
+    }
+}
+
+// корректное склонение после числительных
+function getDeclension($number, $case1, $case2, $case5)
+{
+    $number %= 100;
+    if ($number >= 5 && $number <= 20) {
+        return $case5;
+    }
+    $number %= 10;
+    if ($number == 1) {
+        return $case1;
+    }
+    if ($number >= 2 && $number <= 4) {
+        return $case2;
+    }
+    return $case5;
+};
+
 ?>
 
 <!DOCTYPE html>
@@ -109,14 +144,15 @@ $bets = [
                 </div>
                 <div class="history">
                     <h3>История ставок (<span>4</span>)</h3>
-                    <!-- заполните эту таблицу данными из массива $bets-->
+                    <?php foreach ($bets as $bet): ?>
                     <table class="history__list">
                         <tr class="history__item">
-                            <td class="history__name"><!-- имя автора--></td>
-                            <td class="history__price"><!-- цена--> р</td>
-                            <td class="history__time"><!-- дата в человеческом формате--></td>
+                            <td class="history__name"><?= $bet['name'] ?></td>
+                            <td class="history__price"><?= $bet['price'] ?> р</td>
+                            <td class="history__time"><?= formatDate($bet['ts']) ?></td>
                         </tr>
                     </table>
+                    <?php endforeach; ?>
                 </div>
             </div>
         </div>
