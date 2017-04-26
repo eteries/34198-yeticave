@@ -8,25 +8,39 @@ $bets = [
     ['name' => 'Семён', 'price' => 10000, 'ts' => strtotime('last week')]
 ];
 
-// формат даты в зависимости от прошедшего от ставки времени
-function formatDate($timestamp)
+/**
+ * формат даты в зависимости от прошедшего от ставки времени
+ * @param int $timestamp
+ * @return string
+ */
+function formatElapsedTime(int $timestamp) : string
 {
-    $past_time = time() - $timestamp;
+    $elapsed_time = time() - $timestamp;
 
-    $hours = $past_time / 3600;
-    $minutes = $past_time / 60;
+    $hours = $elapsed_time / 3600;
+    $minutes = $elapsed_time / 60;
 
-    if ($hours > 24) {
-        return date('d.m.y в h:j', $timestamp);
-    } elseif ($hours < 1) {
-        return $minutes . ' ' . getDeclension($minutes, 'минуту', 'минуты', 'минут') . ' назад';
-    } else {
-        return $hours . ' ' . getDeclension($hours, 'час', 'часа', 'часов') . ' назад';
+    if ($hours >= 24) {
+        return date('d.m.y в H:i', $timestamp);
     }
+    if ($hours >= 1 && $hours < 24) {
+        return sprintf('%d час%s назад', $hours, getDeclension($hours, '', 'а', 'ов'));
+    }
+    if ($hours >= 0 && $hours < 1) {
+        return sprintf('%d минут%s назад', $minutes, getDeclension($minutes, 'у', 'ы', ''));
+    }
+    return false;
 }
 
-// корректное склонение после числительных
-function getDeclension($number, $case1, $case2, $case5)
+/**
+ * корректное склонение после числительных
+ * @param int $number
+ * @param string $case1
+ * @param string $case2
+ * @param string $case5
+ * @return string
+ */
+function getDeclension(int $number, string $case1, string $case2, string $case5) : string
 {
     $number %= 100;
     if ($number >= 5 && $number <= 20) {
@@ -149,7 +163,7 @@ function getDeclension($number, $case1, $case2, $case5)
                         <tr class="history__item">
                             <td class="history__name"><?= $bet['name'] ?></td>
                             <td class="history__price"><?= $bet['price'] ?> р</td>
-                            <td class="history__time"><?= formatDate($bet['ts']) ?></td>
+                            <td class="history__time"><?= formatElapsedTime($bet['ts']) ?></td>
                         </tr>
                     </table>
                     <?php endforeach; ?>
