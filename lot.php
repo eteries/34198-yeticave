@@ -9,35 +9,40 @@ $bets = [
 ];
 
 /**
- * формат даты в зависимости от прошедшего от ставки времени
+ * Формат времени в зависимости от прошедшего к текущему моменту временному интервалу.
+ *
  * @param int $timestamp
- * @return string
+ *
+ * @return bool|false|string
  */
-function formatElapsedTime(int $timestamp) : string
+function formatElapsedTime(int $timestamp)
 {
     $elapsed_time = time() - $timestamp;
+
+    if ($timestamp < 0 || $elapsed_time < 0) {
+        return false;
+    }
 
     $hours = $elapsed_time / 3600;
     $minutes = $elapsed_time / 60;
 
-    if ($hours >= 24) {
-        return date('d.m.y в H:i', $timestamp);
-    }
-    if ($hours >= 1 && $hours < 24) {
-        return sprintf('%d час%s назад', $hours, getDeclension($hours, '', 'а', 'ов'));
-    }
-    if ($hours >= 0 && $hours < 1) {
+    if ($hours < 1) {
         return sprintf('%d минут%s назад', $minutes, getDeclension($minutes, 'у', 'ы', ''));
     }
-    return false;
+    if ($hours < 24) {
+        return sprintf('%d час%s назад', $hours, getDeclension($hours, '', 'а', 'ов'));
+    }
+    return date('d.m.y в H:i', $timestamp);
 }
 
 /**
- * корректное склонение после числительных
+ * Корректное склонение после числительных.
+ *
  * @param int $number
  * @param string $case1
  * @param string $case2
  * @param string $case5
+ *
  * @return string
  */
 function getDeclension(int $number, string $case1, string $case2, string $case5) : string
