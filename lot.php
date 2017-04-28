@@ -23,10 +23,10 @@ function formatElapsedTime(int $timestamp)
         return false;
     }
 
-    $hours = $elapsed_time / 3600;
-    $minutes = $elapsed_time / 60;
+    $hours = round($elapsed_time / 3600);
+    $minutes = round(($elapsed_time % 3600) / 60);
 
-    if ($minutes < 1) {
+    if ($elapsed_time <  60) {
         return 'Только что';
     }
 
