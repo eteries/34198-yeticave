@@ -9,11 +9,11 @@ $bets = [
 ];
 
 /**
- * Формат времени в зависимости от прошедшего к текущему моменту временному интервалу.
+ * Форматирует время, в зависимости от прошедшего к текущему моменту временному интервалу.
  *
  * @param int $timestamp
  *
- * @return bool|false|string
+ * @return string|bool Отформатированное время или false, в случае ошибки.
  */
 function formatElapsedTime(int $timestamp)
 {
@@ -26,17 +26,23 @@ function formatElapsedTime(int $timestamp)
     $hours = $elapsed_time / 3600;
     $minutes = $elapsed_time / 60;
 
+    if ($minutes < 1) {
+        return 'Только что';
+    }
+
     if ($hours < 1) {
         return sprintf('%d минут%s назад', $minutes, getDeclension($minutes, 'у', 'ы', ''));
     }
+
     if ($hours < 24) {
         return sprintf('%d час%s назад', $hours, getDeclension($hours, '', 'а', 'ов'));
     }
+
     return date('d.m.y в H:i', $timestamp);
 }
 
 /**
- * Корректное склонение после числительных.
+ * Получает корректное склонение существительных после числительных.
  *
  * @param int $number
  * @param string $case1
@@ -47,17 +53,22 @@ function formatElapsedTime(int $timestamp)
  */
 function getDeclension(int $number, string $case1, string $case2, string $case5) : string
 {
+    $number = abs($number);
+
     $number %= 100;
     if ($number >= 5 && $number <= 20) {
         return $case5;
     }
+
     $number %= 10;
     if ($number == 1) {
         return $case1;
     }
+
     if ($number >= 2 && $number <= 4) {
         return $case2;
     }
+
     return $case5;
 };
 
