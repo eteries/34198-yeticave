@@ -7,6 +7,71 @@ $bets = [
     ['name' => 'Евгений', 'price' => 10500, 'ts' => strtotime('-' . rand(25, 50) .' hour')],
     ['name' => 'Семён', 'price' => 10000, 'ts' => strtotime('last week')]
 ];
+
+/**
+ * Форматирует время, в зависимости от прошедшего к текущему моменту временному интервалу.
+ *
+ * @param int $timestamp
+ *
+ * @return string|bool Отформатированное время или false, в случае ошибки.
+ */
+function formatElapsedTime(int $timestamp)
+{
+    $elapsed_time = time() - $timestamp;
+
+    if ($timestamp < 0 || $elapsed_time < 0) {
+        return false;
+    }
+
+    $hours = round($elapsed_time / 3600);
+    $minutes = round(($elapsed_time % 3600) / 60);
+
+    if ($elapsed_time <  60) {
+        return 'Только что';
+    }
+
+    if ($hours < 1) {
+        return sprintf('%d минут%s назад', $minutes, getDeclension($minutes, 'у', 'ы', ''));
+    }
+
+    if ($hours < 24) {
+        return sprintf('%d час%s назад', $hours, getDeclension($hours, '', 'а', 'ов'));
+    }
+
+    return date('d.m.y в H:i', $timestamp);
+}
+
+/**
+ * Получает корректное склонение существительных после числительных.
+ *
+ * @param int $number
+ * @param string $case1
+ * @param string $case2
+ * @param string $case5
+ *
+ * @return string
+ */
+function getDeclension(int $number, string $case1, string $case2, string $case5) : string
+{
+    $number = abs($number);
+
+    $number %= 100;
+    if ($number >= 5 && $number <= 20) {
+        return $case5;
+    }
+
+    $number %= 10;
+    if ($number == 1) {
+        return $case1;
+    }
+
+    if ($number >= 2 && $number <= 4) {
+        return $case2;
+    }
+
+    return $case5;
+};
+
 ?>
 
 <!DOCTYPE html>
@@ -109,14 +174,15 @@ $bets = [
                 </div>
                 <div class="history">
                     <h3>История ставок (<span>4</span>)</h3>
-                    <!-- заполните эту таблицу данными из массива $bets-->
+                    <?php foreach ($bets as $bet): ?>
                     <table class="history__list">
                         <tr class="history__item">
-                            <td class="history__name"><!-- имя автора--></td>
-                            <td class="history__price"><!-- цена--> р</td>
-                            <td class="history__time"><!-- дата в человеческом формате--></td>
+                            <td class="history__name"><?= $bet['name'] ?></td>
+                            <td class="history__price"><?= $bet['price'] ?> р</td>
+                            <td class="history__time"><?= formatElapsedTime($bet['ts']) ?></td>
                         </tr>
                     </table>
+                    <?php endforeach; ?>
                 </div>
             </div>
         </div>
