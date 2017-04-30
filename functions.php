@@ -9,10 +9,7 @@
  */
 function renderTemplate(string $filename, array $data = []) : string
 {
-    // Если при выводе аргумент $data не был указан явно,
-    // будет использоваться пустой массив
-
-    $filename_control = $filename;
+    $__filename = $filename;
 
     if (!file_exists($filename)) {
         return '';
@@ -24,13 +21,9 @@ function renderTemplate(string $filename, array $data = []) : string
 
     extract($data);
 
-    if ($filename_control !== $filename) {
-        return '';
-    }
-
     ob_start();
 
-    include $filename;
+    include $__filename;
 
     return ob_get_clean();
 }
