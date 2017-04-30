@@ -1,5 +1,5 @@
 <?php
-require 'functions.php';
+require_once 'functions.php';
 
 // устанавливаем часовой пояс в Московское время
 date_default_timezone_set('Europe/Moscow');
@@ -82,16 +82,9 @@ $lots = [
 <body>
 
 <?php
-echo get_template('templates/header.php', []);
-echo get_template(
-    'templates/main.php',
-    [
-    'categories' => $categories,
-    'lots' => $lots,
-    'lot_time_remaining' => $lot_time_remaining
-    ]
-);
-echo get_template('templates/footer.php', []);
+echo renderTemplate('templates/header.php');
+echo renderTemplate('templates/main.php', compact('categories', 'lots', 'lot_time_remaining'));
+echo renderTemplate('templates/footer.php');
 ?>
 
 </body>

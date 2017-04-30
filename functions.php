@@ -1,14 +1,19 @@
 <?php
 /**
- * Получает шаблон и его данные
+ * Формирует строку для вставки шаблона и соответствующих ему данных
  *
  * @param string $filename
  * @param array $data
  *
  * @return string
  */
-function get_template(string $filename, array $data) : string
+function renderTemplate(string $filename, array $data = []) : string
 {
+    // Если при выводе аргумент $data не был указан явно,
+    // будет использоваться пустой массив
+
+    $filename_control = $filename;
+
     if (!file_exists($filename)) {
         return '';
     }
@@ -18,6 +23,10 @@ function get_template(string $filename, array $data) : string
     });
 
     extract($data);
+
+    if ($filename_control !== $filename) {
+        return '';
+    }
 
     ob_start();
 

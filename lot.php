@@ -1,5 +1,5 @@
 <?php
-require 'functions.php';
+require_once 'functions.php';
 
 // ставки пользователей, которыми надо заполнить таблицу
 $bets = [
@@ -21,9 +21,9 @@ $bets = [
 <body>
 
 <?php
-echo get_template('templates/header.php', []);
-echo get_template('templates/lot.php', ['bets' => $bets]);
-echo get_template('templates/footer.php', []);
+echo renderTemplate('templates/header.php');
+echo renderTemplate('templates/lot.php', compact('bets'));
+echo renderTemplate('templates/footer.php');
 ?>
 
 </body>
