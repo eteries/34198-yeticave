@@ -8,12 +8,13 @@ if (!filter_input(INPUT_GET, 'id', FILTER_VALIDATE_INT)) {
 }
 
 $id = isset($_GET['id']) ? (int) $_GET['id'] : null;
-$lot = $lots[$id];
 
 if (!isset($lots[$id])) {
     header('HTTP/1.1 404 Not Found');
     exit;
 }
+
+$lot = $lots[$id];
 
 $lot_time_remaining = getRemainingTime();
 
