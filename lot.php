@@ -7,7 +7,7 @@ if (!filter_input(INPUT_GET, 'id', FILTER_VALIDATE_INT)) {
     exit;
 }
 
-$id = (int) $_GET['id'];
+$id = isset($_GET['id']) ? (int) $_GET['id'] : null;
 $lot = $lots[$id];
 
 if (!isset($lots[$id])) {
