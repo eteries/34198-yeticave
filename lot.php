@@ -2,14 +2,18 @@
 require_once 'functions.php';
 require_once 'lots_data.php';
 
-$id = $_GET['id'];
-
-if (!filter_input(INPUT_GET, 'id', FILTER_VALIDATE_INT) || $id >= count($lots)) {
+if (!filter_input(INPUT_GET, 'id', FILTER_VALIDATE_INT)) {
     header('HTTP/1.1 404 Not Found');
     exit;
 }
 
+$id = $_GET['id'];
 $lot = $lots[$id];
+
+if (!isset($lots[$id])) {
+    header('HTTP/1.1 404 Not Found');
+    exit;
+}
 
 $lot_time_remaining = getRemainingTime();
 

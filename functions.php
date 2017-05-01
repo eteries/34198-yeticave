@@ -1,4 +1,6 @@
 <?php
+date_default_timezone_set('Europe/Moscow');
+
 /**
  * Формирует строку для вставки шаблона и соответствующих ему данных
  *
@@ -97,10 +99,8 @@ function getDeclension(int $number, string $case1, string $case2, string $case5)
  *
  * @return string
  */
-function getRemainingTime() {
-    date_default_timezone_set('Europe/Moscow');
-
-    $lot_time_remaining = '00:00';
+function getRemainingTime()
+{
     $tomorrow = strtotime('tomorrow midnight');
     $now = time();
 

@@ -64,7 +64,7 @@
                 </div>
                 <div class="history">
                     <h3>История ставок (<span>4</span>)</h3>
-                    <?php foreach ($bets as $bet): ?>
+                    <?php foreach ($bets as $bet) : ?>
                         <table class="history__list">
                             <tr class="history__item">
                                 <td class="history__name"><?= $bet['name'] ?></td>

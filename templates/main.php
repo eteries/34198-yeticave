@@ -28,13 +28,13 @@
             <h2>Открытые лоты</h2>
             <select class="lots__select">
                 <option>Все категории</option>
-                <?php foreach ($categories as $category_name): ?>
+                <?php foreach ($categories as $category_name) : ?>
                     <option><?= $category_name ?></option>
                 <?php endforeach; ?>
             </select>
         </div>
         <ul class="lots__list">
-            <?php foreach ($lots as $index => $lot): ?>
+            <?php foreach ($lots as $index => $lot) : ?>
                 <li class="lots__item lot">
                     <div class="lot__image">
                         <img src=<?= $lot['img'] ?> width="350" height="260" alt="<?= $lot['title'] ?>">
