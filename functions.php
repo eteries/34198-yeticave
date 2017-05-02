@@ -1,4 +1,6 @@
 <?php
+date_default_timezone_set('Europe/Moscow');
+
 /**
  * Формирует строку для вставки шаблона и соответствующих ему данных
  *
@@ -91,3 +93,25 @@ function getDeclension(int $number, string $case1, string $case2, string $case5)
 
     return $case5;
 };
+
+/**
+ * Возвращает время до полуночи (по Москве) в формате ЧЧ:ММ.
+ *
+ * @return string
+ */
+function getRemainingTime()
+{
+    $tomorrow = strtotime('tomorrow midnight');
+    $now = time();
+
+    // расчёт оставшегося времени:
+    $remaining_minutes_total = ($tomorrow - $now) / 60;
+    $remaining_hours = floor($remaining_minutes_total / 60);
+    $remaining_minutes = $remaining_minutes_total % 60;
+
+    // двухзначный формат:
+    $remaining_hours = ($remaining_hours < 10) ? '0' . $remaining_hours : $remaining_hours;
+    $remaining_minutes = ($remaining_minutes < 10) ? '0' . $remaining_minutes : $remaining_minutes;
+
+    return "$remaining_hours:$remaining_minutes";
+}

@@ -1,5 +1,22 @@
 <?php
 require_once 'functions.php';
+require_once 'lots_data.php';
+
+if (!filter_input(INPUT_GET, 'id', FILTER_VALIDATE_INT)) {
+    header('HTTP/1.1 404 Not Found');
+    exit;
+}
+
+$id = isset($_GET['id']) ? (int) $_GET['id'] : null;
+
+if (!isset($lots[$id])) {
+    header('HTTP/1.1 404 Not Found');
+    exit;
+}
+
+$lot = $lots[$id];
+
+$lot_time_remaining = getRemainingTime();
 
 // ставки пользователей, которыми надо заполнить таблицу
 $bets = [
@@ -14,7 +31,7 @@ $bets = [
 <html lang="ru">
 <head>
     <meta charset="UTF-8">
-    <title>DC Ply Mens 2016/2017 Snowboard</title>
+    <title><?= $lot['title'] ?></title>
     <link href="css/normalize.min.css" rel="stylesheet">
     <link href="css/style.css" rel="stylesheet">
 </head>
@@ -22,7 +39,7 @@ $bets = [
 
 <?php
 echo renderTemplate('templates/header.php');
-echo renderTemplate('templates/lot.php', compact('bets'));
+echo renderTemplate('templates/lot.php', compact('bets', 'lot', 'lot_time_remaining'));
 echo renderTemplate('templates/footer.php');
 ?>
 
