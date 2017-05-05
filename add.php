@@ -89,10 +89,6 @@ if (empty($invalid_controls) && !empty($_POST)) {
 </main>
 
 <?= renderTemplate('templates/footer.php'); ?>
-<script>
-  [].forEach.call(document.querySelectorAll('[required]'), function (el)  {
-    el.removeAttribute('required');
-  })
-</script>
+
 </body>
 </html>
