@@ -4,8 +4,6 @@ require_once 'lots_data.php';
 
 $lot_time_remaining = getRemainingTime();
 
-$categories = ['Доски и лыжи', "Крепления", 'Ботинки', 'Инструменты', 'Одежда', 'Разное'];
-
 ?>
 
 <!DOCTYPE html>

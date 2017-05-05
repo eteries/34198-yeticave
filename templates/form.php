@@ -7,28 +7,30 @@
             <label for="lot-name">Наименование</label>
             <input id="lot-name" type="text" name="lot-name" placeholder="Введите наименование лота"
                    value="<?= $_POST['lot-name'] ?? '' ?>" required>
-            <span class="form__error"><?= $invalid_controls['lot-name'] ?? '' ?></span>
+            <?= isset($invalid_controls['lot-name']) ?
+                '<span class="form__error">'.$invalid_controls['lot-name'].'</span>' : '' ?>
         </div>
         <div class="form__item <?= isset($invalid_controls['category']) ? 'form__item--invalid' : '' ?>">
             <label for="category">Категория</label>
             <select id="category" name="category" required>
                 <option>Выберите категорию</option>
-                <option <?= (isset($_POST['category']) && $_POST['category'] == 'Доски и лыжи') ? 'selected' : ''?> >Доски и лыжи</option>
-                <option <?= (isset($_POST['category']) && $_POST['category'] == 'Крепления') ? 'selected' : ''?> >Крепления</option>
-                <option <?= (isset($_POST['category']) && $_POST['category'] == 'Ботинки') ? 'selected' : ''?> >Ботинки</option>
-                <option <?= (isset($_POST['category']) && $_POST['category'] == 'Одежда') ? 'selected' : ''?> >Одежда</option>
-                <option <?= (isset($_POST['category']) && $_POST['category'] == 'Инструменты') ? 'selected' : ''?> >Инструменты</option>
-                <option <?= (isset($_POST['category']) && $_POST['category'] == 'Разное') ? 'selected' : ''?> >Разное</option>
+                <?php foreach ($categories as $category_name) : ?>
+                    <option <?= (isset($_POST['category']) && $_POST['category'] == $category_name) ? 'selected' : ''?>>
+                        <?= $category_name ?>
+                    </option>
+                <?php endforeach; ?>
             </select>
-            <span class="form__error"><?= $invalid_controls['category'] ?? '' ?></span>
+            <?= isset($invalid_controls['category']) ?
+                '<span class="form__error">'.$invalid_controls['category'].'</span>' : '' ?>
         </div>
     </div>
     <div class="form__item form__item--wide
                     <?= isset($invalid_controls['message']) ? 'form__item--invalid' : ''; ?>">
         <label for="message">Описание</label>
-        <textarea id="message" name="message" placeholder="Напишите описание лота" required><?= $_POST['message'] ?? '' ?>
-        </textarea>
-        <span class="form__error"><?= $invalid_controls['message'] ?? '' ?></span>
+        <textarea id="message" name="message"
+                  placeholder="Напишите описание лота" required><?= $_POST['message'] ?? '' ?></textarea>
+        <?= isset($invalid_controls['message']) ?
+            '<span class="form__error">'.$invalid_controls['message'].'</span>' : '' ?>
     </div>
     <div class="form__item form__item--file">
         <!-- form__item--uploaded -->
@@ -50,23 +52,26 @@
         <div class="form__item form__item--small
                 <?= isset($invalid_controls['lot-rate']) ? 'form__item--invalid' : '' ?>">
             <label for="lot-rate">Начальная цена</label>
-            <input id="lot-rate" type="number" name="lot-rate" placeholder="0"
+            <input id="lot-rate" type="number" name="lot-rate" placeholder="1000"
                    value="<?= $_POST['lot-rate'] ?? '' ?>" required>
-            <span class="form__error"><?= $invalid_controls['lot-rate'] ?? '' ?></span>
+            <?= isset($invalid_controls['lot-rate']) ?
+                '<span class="form__error">'.$invalid_controls['lot-rate'].'</span>' : '' ?>
         </div>
         <div class="form__item form__item--small
                 <?= isset($invalid_controls['lot-step']) ? 'form__item--invalid' : '' ?>">
             <label for="lot-step">Шаг ставки</label>
-            <input id="lot-step" type="number" name="lot-step" placeholder="0"
+            <input id="lot-step" type="number" name="lot-step" placeholder="100"
                    value="<?= $_POST['lot-step'] ?? '' ?>" required>
-            <span class="form__error"><?= $invalid_controls['lot-step'] ?? '' ?></span>
+            <?= isset($invalid_controls['lot-step']) ?
+                '<span class="form__error">'.$invalid_controls['lot-step'].'</span>' : '' ?>
         </div>
         <div class="form__item <?= isset($invalid_controls['lot-date']) ? 'form__item--invalid' : '' ?>">
             <label for="lot-date">Дата завершения</label>
             <input class="form__input-date" id="lot-date"
-                   type="text" name="lot-date" placeholder="20.05.2017"
-                   value="<?= $_POST['lot-date'] ?? '' ?>" required>
-            <span class="form__error"><?= $invalid_controls['lot-date'] ?? '' ?></span>
+                   type="text" name="lot-date" placeholder="<?= date('d.m.Y', strtotime(' +1 week')); ?>"
+                   value="<?= $_POST['lot-date'] ?? date('d.m.Y', strtotime(' +1 week')) ?>" required>
+            <?= isset($invalid_controls['lot-date']) ?
+                '<span class="form__error">'.$invalid_controls['lot-date'].'</span>' : '' ?>
         </div>
     </div>
     <span class="form__error form__error--bottom">Пожалуйста, исправьте ошибки в форме.</span>

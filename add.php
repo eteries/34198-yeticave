@@ -6,18 +6,48 @@ $lot = [];
 $invalid_controls = [];
 
 /**
- * Сформировать массив не валидных полей, если такоевые найдутся.
+ * Сформировать массив не валидных полей, если таковые найдутся.
  */
 foreach ($_POST as $name => $value) {
-    if (!trim($value)) {
+    $value = trim($value);
+
+    if (empty($value)) {
         $invalid_controls[$name] = 'Заполните это поле';
     }
+
     if ($name == 'category' && $value == 'Выберите категорию') {
         $invalid_controls[$name] = 'Заполните это поле';
     }
 
-    if (($name == 'lot-rate' || $name == 'lot-rate') && !is_int((int) $value)) {
+    if (($name == 'lot-rate' || $name == 'lot-step') && !is_numeric($value)) {
         $invalid_controls[$name] = 'Введите число';
+    }
+}
+
+/**
+ * Загрузить, проверить изображение и в случае успеха
+ */
+if (isset($_FILES['photo2']) && $_FILES['photo2']['error'] == 0) {
+    $original_name = $_FILES['photo2']['name'];
+    $temp_name = $_FILES['photo2']['tmp_name'];
+    $dir = 'img/';
+    $file_path = $dir.$original_name;
+
+    $mimes = [
+        'jpg'  => 'image/jpeg',
+        'jpeg' => 'image/jpeg',
+        'png'  => 'image/png',
+        'gif'  => 'image/gif'
+    ];
+    $f_info = new finfo;
+    $file_info = $f_info->file($temp_name, FILEINFO_MIME_TYPE);
+
+    if ($check = array_search($file_info, $mimes, true) !== false) {
+        $uploaded = move_uploaded_file($temp_name, $file_path);
+    }
+
+    if (isset($uploaded) && $uploaded === true) {
+        $img = $file_path;
     }
 }
 
@@ -30,20 +60,7 @@ if (empty($invalid_controls) && !empty($_POST)) {
     $lot['price'] = trim($_POST['lot-rate'] ?? '');
     $lot['min'] = (int) trim($_POST['lot-rate'] ?? '') + (int) $lot['price'];
     $lot['description'] = trim($_POST['message'] ?? '');
-}
-
-/**
- * Дополнить данные загруженной фотографией.
- */
-if (isset($_FILES['photo2'])) {
-    $original_name = $_FILES['photo2']['name'];
-    $temp_name = $_FILES['photo2']['tmp_name'];
-    $dir = 'img/';
-    $destination = $dir.$original_name;
-
-    if (move_uploaded_file($temp_name, $destination)) {
-        $lot['img'] = $destination;
-    }
+    $lot['img'] = $img ?? 'img/logo.svg';
 }
 
 ?>
@@ -56,7 +73,6 @@ if (isset($_FILES['photo2'])) {
     <link href="../css/style.css" rel="stylesheet">
 </head>
 <body>
-
 <?= renderTemplate('templates/header.php'); ?>
 
 <main>
@@ -64,7 +80,7 @@ if (isset($_FILES['photo2'])) {
     echo renderTemplate('templates/nav.php');
 
     if (empty($lot)) {
-        echo renderTemplate('templates/form.php', compact('invalid_controls'));
+        echo renderTemplate('templates/form.php', compact('invalid_controls', 'categories'));
     } else {
         echo renderTemplate('templates/lot.php', compact('bets', 'lot', 'lot_time_remaining'));
     }
@@ -73,6 +89,10 @@ if (isset($_FILES['photo2'])) {
 </main>
 
 <?= renderTemplate('templates/footer.php'); ?>
-
+<script>
+  [].forEach.call(document.querySelectorAll('[required]'), function (el)  {
+    el.removeAttribute('required');
+  })
+</script>
 </body>
 </html>
