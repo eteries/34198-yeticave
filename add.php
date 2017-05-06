@@ -19,7 +19,7 @@ foreach ($_POST as $name => $value) {
         $invalid_controls[$name] = 'Заполните это поле';
     }
 
-    if (($name == 'lot-rate' || $name == 'lot-step') && !is_numeric($value)) {
+    if (($name == 'lot-rate' || $name == 'lot-step') && !filter_var($value, FILTER_VALIDATE_INT)) {
         $invalid_controls[$name] = 'Введите число';
     }
 }
@@ -31,7 +31,6 @@ if (isset($_FILES['photo2']) && $_FILES['photo2']['error'] == 0) {
     $original_name = $_FILES['photo2']['name'];
     $temp_name = $_FILES['photo2']['tmp_name'];
     $dir = 'img/';
-    $file_path = $dir.$original_name;
 
     $mimes = [
         'jpg'  => 'image/jpeg',
@@ -39,10 +38,17 @@ if (isset($_FILES['photo2']) && $_FILES['photo2']['error'] == 0) {
         'png'  => 'image/png',
         'gif'  => 'image/gif'
     ];
+
     $f_info = new finfo;
     $file_info = $f_info->file($temp_name, FILEINFO_MIME_TYPE);
 
-    if ($check = array_search($file_info, $mimes, true) !== false) {
+    $check = array_search($file_info, $mimes, true);
+    $extension = pathinfo($original_name, PATHINFO_EXTENSION);
+    $allowed = array_keys($mimes);
+
+    // Проверка  соответствия MIME и заявленного расширения разрешенным, загрузка с новым именем в случае успеха
+    if ($check !== false && in_array($extension, $allowed)) {
+        $file_path = $dir.time().'.'.$check;
         $uploaded = move_uploaded_file($temp_name, $file_path);
     }
 
