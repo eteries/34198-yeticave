@@ -10,16 +10,13 @@ $invalid_controls = [];
 /**
  * Сформировать массив не валидных полей, если таковые найдутся.
  */
-foreach ($_POST as $name => $value) {
-    $value = trim($value);
 
-    if ($name == 'email' && !filter_var($value, FILTER_VALIDATE_EMAIL)) {
-        $invalid_controls[$name] = 'Введите e-mail';
-    }
+if (isset($_POST['email']) && !filter_var(trim($_POST['email']), FILTER_VALIDATE_EMAIL)) {
+    $invalid_controls['email'] = 'Введите e-mail';
+}
 
-    if ($name == 'password' && empty($value)) {
-        $invalid_controls[$name] = 'Введите пароль';
-    }
+if (isset($_POST['password']) && empty(trim($_POST['password']))) {
+    $invalid_controls['password'] = 'Введите пароль';
 }
 
 /**
