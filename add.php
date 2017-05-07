@@ -1,4 +1,10 @@
 <?php
+session_start();
+if (!isset($_SESSION['user'])) {
+    header('HTTP/1.1 403 Forbidden');
+    exit;
+}
+
 require_once 'functions.php';
 require_once 'lots_data.php';
 
@@ -69,32 +75,15 @@ if (empty($invalid_controls) && !empty($_POST)) {
     $lot['img'] = $img ?? 'img/logo.svg';
 }
 
-?>
-<!DOCTYPE html>
-<html lang="ru">
-<head>
-    <meta charset="UTF-8">
-    <title>Добавление лота</title>
-    <link href="../css/normalize.min.css" rel="stylesheet">
-    <link href="../css/style.css" rel="stylesheet">
-</head>
-<body>
-<?= renderTemplate('templates/header.php'); ?>
+echo renderTemplate('templates/top.php', ['html_title' => 'Добавление лота']);
+echo renderTemplate('templates/header.php');
 
-<main>
-    <?php
-    echo renderTemplate('templates/nav.php');
+echo renderTemplate('templates/nav.php');
 
-    if (empty($lot)) {
-        echo renderTemplate('templates/form.php', compact('invalid_controls', 'categories'));
-    } else {
-        echo renderTemplate('templates/lot.php', compact('bets', 'lot', 'lot_time_remaining'));
-    }
-    ?>
+if (empty($lot)) {
+    echo renderTemplate('templates/form.php', compact('invalid_controls', 'categories'));
+} else {
+    echo renderTemplate('templates/lot.php', compact('bets', 'lot', 'lot_time_remaining'));
+}
 
-</main>
-
-<?= renderTemplate('templates/footer.php'); ?>
-
-</body>
-</html>
+echo renderTemplate('templates/footer.php');

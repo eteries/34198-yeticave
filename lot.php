@@ -1,4 +1,6 @@
 <?php
+session_start();
+
 require_once 'functions.php';
 require_once 'lots_data.php';
 
@@ -15,25 +17,11 @@ if (!isset($lots[$id])) {
 }
 
 $lot = $lots[$id];
-?>
 
-<!DOCTYPE html>
-<html lang="ru">
-<head>
-    <meta charset="UTF-8">
-    <title><?= $lot['title'] ?></title>
-    <link href="css/normalize.min.css" rel="stylesheet">
-    <link href="css/style.css" rel="stylesheet">
-</head>
-<body>
+echo renderTemplate('templates/top.php', ['html_title' => $lot['title']]);
+echo renderTemplate('templates/header.php');
 
-<?= renderTemplate('templates/header.php'); ?>
-<main>
-    <?= renderTemplate('templates/nav.php'); ?>
-    <?= renderTemplate('templates/lot.php', compact('bets', 'lot', 'lot_time_remaining')); ?>
-</main>
-<?=  renderTemplate('templates/footer.php'); ?>
-?>
+echo renderTemplate('templates/nav.php');
+echo renderTemplate('templates/lot.php', compact('bets', 'lot', 'lot_time_remaining'));
 
-</body>
-</html>
+echo renderTemplate('templates/footer.php');
