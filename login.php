@@ -12,11 +12,11 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     /**
      * Сформировать массив не валидных полей, если таковые найдутся.
      */
-    if (!filter_var(trim($_POST['email']), FILTER_VALIDATE_EMAIL)) {
+    if (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
         $invalid_controls['email'] = 'Введите e-mail';
     }
 
-    if (empty(trim($_POST['password']))) {
+    if (empty($password)) {
         $invalid_controls['password'] = 'Введите пароль';
     }
 
