@@ -11,7 +11,7 @@
     </div>
     <div class="form__item form__item--last <?= isset($invalid_controls['password']) ? 'form__item--invalid' : '' ?>">
         <label for="password">Пароль*</label>
-        <input id="password" type="text" name="password" placeholder="Введите пароль" required>
+        <input id="password" type="password" name="password" placeholder="Введите пароль" required>
         <?= isset($invalid_controls['password']) ?
             '<span class="form__error">'.$invalid_controls['password'].'</span>' : '' ?>
     </div>

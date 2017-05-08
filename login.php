@@ -5,7 +5,8 @@ require_once 'functions.php';
 require_once 'userdata.php';
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-    $login = [];
+    $email = trim($_POST['email'] ?? '');
+    $password = trim($_POST['password'] ?? '');
     $invalid_controls = [];
 
     /**
@@ -23,15 +24,12 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
      * Если данные введены без ошибок, сформировать пару e-mail/пароль для процедуры логина
      */
     if (empty($invalid_controls)) {
-        $login['email'] = trim($_POST['email'] ?? '');
-        $login['password'] = trim($_POST['password'] ?? '');
-
-        $check = array_search($login['email'], array_column($users, 'email'), true);
+        $check = array_search($email, array_column($users, 'email'), true);
 
         // Если впользователь с этим e-mail находится, то для авторизации сверяется пароль
         if ($check !== false) {
             $this_user = $users[$check];
-            $verify = password_verify($login['password'], $this_user['password']);
+            $verify = password_verify($password, $this_user['password']);
 
             if ($verify === true) {
                 $_SESSION['user'] = $this_user;
