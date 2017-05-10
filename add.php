@@ -70,7 +70,7 @@ if (empty($invalid_controls) && !empty($_POST)) {
     $lot['title'] = trim($_POST['lot-name'] ?? '');
     $lot['category'] = $_POST['category'] ?? '';
     $lot['price'] = trim($_POST['lot-rate'] ?? '');
-    $lot['min'] = (int) trim($_POST['lot-rate'] ?? '') + (int) $lot['price'];
+    $lot['min'] = (int) trim($_POST['lot-step'] ?? '') + (int) $lot['price'];
     $lot['description'] = trim($_POST['message'] ?? '');
     $lot['img'] = $img ?? 'img/logo.svg';
 }

@@ -12,9 +12,9 @@
             <?php if (isset($_SESSION['user'])) : ?>
                 <div class="lot-item__state">
                     <div class="lot-item__timer timer">
-                            <?= $lot_time_remaining ?>
-                        </div>
-                        <div class="lot-item__cost-state">
+                        <?= $lot_time_remaining ?>
+                    </div>
+                    <div class="lot-item__cost-state">
                         <div class="lot-item__rate">
                             <span class="lot-item__amount">Текущая цена</span>
                             <span class="lot-item__cost"><?= $lot['price'] ?></span>
@@ -23,13 +23,19 @@
                             Мин. ставка <span><?= $lot['min'] ?> р</span>
                         </div>
                     </div>
-                    <form class="lot-item__form" action="https://echo.htmlacademy.ru" method="post">
-                        <p class="lot-item__form-item">
-                            <label for="cost">Ваша ставка</label>
-                            <input id="cost" type="number" name="cost" placeholder="<?= $lot['min'] ?>">
-                        </p>
-                        <button type="submit" class="button">Сделать ставку</button>
-                    </form>
+                    <?php if ($my_lots_id == null) : ?>
+                        <form class="lot-item__form <?= isset($error) ? 'form--invalid' : '' ?>"
+                          action="" method="post">
+                            <p class="lot-item__form-item <?= isset($error) ? 'form__item--invalid' : '' ?>">
+                                <label for="cost">Ваша ставка</label>
+                                <input id="cost" type="number" name="cost" placeholder="<?= $lot['min'] ?>">
+                            </p>
+                            <button type="submit" class="button">Сделать ставку</button>
+                            <?= isset($error) ? '<div class="form__error">'.$error.'</div>' : '' ?>
+                        </form>
+                    <?php else : ?>
+                        <p>Ваша ставка: <?= $existing_bids[$my_lots_id]['cost'] ?></p>
+                    <?php endif; ?>
                 </div>
             <?php endif; ?>
             <div class="history">
