@@ -1,7 +1,7 @@
 <section class="rates container">
     <h2>Мои ставки</h2>
     <?php if (empty($my_lots)) : ?>
-        <p>Вы пока не делали ставок.</p>
+        <p>Вы пока не делали ставок на существующие лоты.</p>
     <?php else : ?>
         <table class="rates__list">
             <?php foreach ($my_lots as $my_lot) : ?>

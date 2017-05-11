@@ -24,6 +24,7 @@ $lot['min'] = $lot['min'] ??  $lot['price']+1;
  */
 $existing_bids = [];
 $my_lots_id = null;
+$error = '';
 
 if (isset($_COOKIE['my_bids'])) {
     $existing_bids = json_decode($_COOKIE['my_bids'], true);
@@ -45,9 +46,8 @@ if (isset($_POST['cost'])) {
         'time' => time(),
         'id' => $id
     ];
-    $error = '';
 
-    if (!filter_var($new_bid['cost'], FILTER_VALIDATE_INT) || $new_bid['cost'] <= $lot['price']) {
+    if (!filter_var($new_bid['cost'], FILTER_VALIDATE_INT, ['options' => ['min_range'=>$lot['min']]])) {
         $error = 'Ставка должна быть не меньше '.$lot['min'];
     } else {
         $existing_bids[] = $new_bid;

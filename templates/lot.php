@@ -31,7 +31,7 @@
                                 <input id="cost" type="number" name="cost" placeholder="<?= $lot['min'] ?>">
                             </p>
                             <button type="submit" class="button">Сделать ставку</button>
-                            <?= isset($error) ? '<div class="form__error">'.$error.'</div>' : '' ?>
+                            <?= !empty($error) ? '<div class="form__error">'.$error.'</div>' : '' ?>
                         </form>
                     <?php else : ?>
                         <p>Ваша ставка: <?= $existing_bids[$my_lots_id]['cost'] ?></p>

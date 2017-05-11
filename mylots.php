@@ -15,14 +15,16 @@ if (isset($_COOKIE['my_bids'])) {
     foreach ($my_bids as $my_bid) {
         $id = $my_bid['id'];
 
-        $my_lots[] = [
-            'id' => $id,
-            'title' => $lots[$id]['title'],
-            'img' => $lots[$id]['img'],
-            'category' => $lots[$id]['category'],
-            'posted' => $my_bid['time'],
-            'cost' => $my_bid['cost']
-        ];
+        if (isset($lots[$id])) {
+            $my_lots[] = [
+                'id' => $id,
+                'title' => $lots[$id]['title'],
+                'img' => $lots[$id]['img'],
+                'category' => $lots[$id]['category'],
+                'posted' => $my_bid['time'],
+                'cost' => $my_bid['cost']
+            ];
+        }
     }
 }
 
