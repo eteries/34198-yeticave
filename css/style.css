@@ -834,7 +834,7 @@ h2 {
   display: block;
 }
 
-.form__item--invalid .form__error {
+.form__item--invalid .form__error, .form__item--invalid ~ .form__error {
   display: block;
 }
 
@@ -1020,6 +1020,7 @@ h2 {
   -ms-flex-pack: justify;
   justify-content: space-between;
   margin-top: 17px;
+  flex-wrap: wrap;
 }
 
 .lot-item__form-item {
