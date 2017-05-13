@@ -1,46 +1,49 @@
-CREATE TABLE lots (
-  id INT AUTO_INCREMENT PRIMARY KEY,
-  creation_date DATETIME,
-  title CHAR(255),
-  description TEXT(2048),
-  picture CHAR(255) DEFAULT 'img/logo.svg',
-  starting_price INT,
-  ending_date DATETIME,
-  bid_step INT,
-  fav_count INT,
-  author_id INT,
-  winner_id INT,
-  category_id INT
-);
-
 CREATE TABLE users (
   id INT AUTO_INCREMENT PRIMARY KEY,
-  reg_time DATETIME,
-  username CHAR(255),
-  email CHAR(128),
-  password CHAR(32),
+  reg_time DATETIME NOT NULL,
+  username CHAR(255) UNIQUE NOT NULL,
+  email CHAR(128) UNIQUE NOT NULL,
+  password CHAR(32) NOT NULL,
   avatar CHAR(255),
   contact_info TEXT(1024)
 );
 
-CREATE TABLE bids (
-  id INT AUTO_INCREMENT PRIMARY KEY,
-  placement_date DATETIME,
-  bid_amount INT,
-  user_id INT,
-  lot_id INT
-);
-
 CREATE TABLE categories (
   id INT AUTO_INCREMENT PRIMARY KEY,
-  title CHAR(128)
+  title CHAR(128) UNIQUE
+);
+
+CREATE TABLE lots (
+  id INT AUTO_INCREMENT PRIMARY KEY,
+  creation_date DATETIME NOT NULL,
+  title CHAR(255) NOT NULL,
+  description TEXT(2048),
+  picture CHAR(255) DEFAULT 'img/logo.svg',
+  starting_price INT NOT NULL,
+  ending_date DATETIME,
+  bid_step INT,
+  fav_count INT,
+  author_id INT NOT NULL,
+  winner_id INT,
+  lot_category INT,
+  FOREIGN KEY (author_id) REFERENCES users(id),
+  FOREIGN KEY (winner_id) REFERENCES users(id),
+  FOREIGN KEY (lot_category) REFERENCES categories(id)
+);
+
+CREATE TABLE bids (
+  id INT AUTO_INCREMENT PRIMARY KEY,
+  placement_date DATETIME NOT NULL,
+  bid_amount INT NOT NULL,
+  bid_author INT NOT NULL,
+  bid_lot INT NOT NULL,
+  FOREIGN KEY (bid_author) REFERENCES users(id),
+  FOREIGN KEY (bid_lot) REFERENCES lots(id)
 );
 
 
 CREATE UNIQUE INDEX mails ON users(email);
 CREATE UNIQUE INDEX usernames ON users(username);
+CREATE UNIQUE INDEX categories ON categories(title);
 
 CREATE INDEX lots_titles ON lots(title);
-CREATE INDEX categories_titles ON categories(title);
-CREATE INDEX all_lots ON lots(id);
-CREATE INDEX all_bids ON bids(id);
