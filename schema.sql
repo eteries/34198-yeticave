@@ -10,7 +10,7 @@ CREATE TABLE users (
 
 CREATE TABLE categories (
   id INT AUTO_INCREMENT PRIMARY KEY,
-  title CHAR(128) UNIQUE
+  title CHAR(128) UNIQUE NOT NULL
 );
 
 CREATE TABLE lots (
@@ -22,10 +22,10 @@ CREATE TABLE lots (
   starting_price INT NOT NULL,
   ending_date DATETIME,
   bid_step INT,
-  fav_count INT,
+  fav_count INT DEFAULT 0,
   author_id INT NOT NULL,
   winner_id INT,
-  lot_category INT,
+  lot_category INT NOT NULL,
   FOREIGN KEY (author_id) REFERENCES users(id),
   FOREIGN KEY (winner_id) REFERENCES users(id),
   FOREIGN KEY (lot_category) REFERENCES categories(id)
@@ -40,10 +40,5 @@ CREATE TABLE bids (
   FOREIGN KEY (bid_author) REFERENCES users(id),
   FOREIGN KEY (bid_lot) REFERENCES lots(id)
 );
-
-
-CREATE UNIQUE INDEX mails ON users(email);
-CREATE UNIQUE INDEX usernames ON users(username);
-CREATE UNIQUE INDEX categories ON categories(title);
 
 CREATE INDEX lots_titles ON lots(title);
