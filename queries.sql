@@ -3,9 +3,10 @@ SELECT * FROM categories;
 
 /* получить самые новые, открытые лоты. Каждый лот должен включать название, стартовую цену, ссылку на изображение, цену, количество ставок, название категории */
 SELECT lots.title, lots.starting_price, lots.picture, count(bids.id), max(bids.bid_amount), categories.title
-FROM lots JOIN bids ON lots.id = bids.bid_lot
+FROM lots LEFT JOIN bids ON lots.id = bids.bid_lot
           JOIN categories ON lots.lot_category = categories.id
 WHERE winner_id IS NULL
+GROUP BY lots.title
 ORDER BY lots.creation_date DESC;
 
 /* найти лот по его названию или описанию */
@@ -20,7 +21,7 @@ SET title = 'Брюки для сноубординга Craft',
     starting_price = 2700,
     bid_step = 300,
     creation_date = NOW(),
-    ending_date = 1495367432,
+    ending_date = '2017-05-14 15:23:44',
     author_id = 1;
 
 /* обновить название лота по его идентификатору */
@@ -36,6 +37,5 @@ SET placement_date = NOW(),
     bid_lot = 4;
 
 /* получить список ставок для лота по его идентификатору */
-SELECT bids.bid_amount FROM bids
-JOIN lots ON bids.bid_lot = lots.id
-WHERE lots.id = 4;
+SELECT bid_amount FROM bids
+WHERE bid_lot = 4;
