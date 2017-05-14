@@ -6,7 +6,7 @@ SELECT lots.title, lots.starting_price, lots.picture, count(bids.id), max(bids.b
 FROM lots LEFT JOIN bids ON lots.id = bids.bid_lot
           JOIN categories ON lots.lot_category = categories.id
 WHERE winner_id IS NULL
-GROUP BY lots.title
+GROUP BY lots.id
 ORDER BY lots.creation_date DESC;
 
 /* найти лот по его названию или описанию */
