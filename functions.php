@@ -1,4 +1,6 @@
 <?php
+require_once 'mysql_helper.php';
+
 date_default_timezone_set('Europe/Moscow');
 
 /**
@@ -114,4 +116,108 @@ function getRemainingTime()
     $remaining_minutes = ($remaining_minutes < 10) ? '0' . $remaining_minutes : $remaining_minutes;
 
     return "$remaining_hours:$remaining_minutes";
+}
+
+/**
+ * Делает запрос к БД на основе подготовленного шаблона и возвращает результат.
+ *
+ * @param mysqli $link
+ * @param string $sql
+ * @param array $values
+ *
+ * @return array|bool
+ */
+function queryDB(mysqli $link, string $sql, array $values = [])
+{
+    $data = [];
+    $stmt = db_get_prepare_stmt($link, $sql, $values);
+
+    if (!$stmt) {
+        return false;
+    }
+
+    mysqli_stmt_execute($stmt);
+
+    $result = mysqli_stmt_get_result($stmt);
+    if (!$result) {
+        return $data;
+    }
+
+    while ($row = mysqli_fetch_assoc($result)) {
+        $data[] = $row;
+    }
+
+    mysqli_free_result($result);
+    return $data;
+}
+
+/**
+ * Вставляет переданные данные в БД с помощью готового SQL запроса.
+ *
+ * @param mysqli $link
+ * @param string $sql
+ * @param array $values
+ *
+ * @return bool|int
+ */
+function insertDataDB(mysqli $link, string $sql, array $values = [])
+{
+    if (!$stmt = db_get_prepare_stmt($link, $sql, $values)) {
+        return false;
+    }
+
+    mysqli_stmt_execute($stmt);
+
+    $last_id = mysqli_insert_id($link);
+
+    if ($last_id == 0) {
+        return false;
+    }
+    
+    return $last_id;
+}
+
+/**
+ * Подготавливает SQL запрос и данные, выполняет обновление записей в БД.
+ *
+ * @param mysqli $link
+ * @param string $table_name
+ * @param array $data
+ * @param array $conditions
+ *
+ * @return bool|int
+ */
+function updateDataDB(mysqli $link, string $table_name, array $data, array $conditions)
+{
+    $set = [];
+    $where = [];
+    $values = [];
+    $sql = 'UPDATE '.$table_name;
+
+    // Обработка данных и их значений
+    foreach ($data as $name => $value) {
+        $set[] = $name.' = ?';
+        $values[] = $value;
+    }
+    $sql .= ' SET '.implode(', ', $set);
+
+    // Обработка условий и их значений
+    foreach ($conditions as $name => $value) {
+        $where[] = $name.' = ?';
+        $values[] = $value;
+    }
+    if (!empty($where)) {
+        $sql .= ' WHERE '.implode(', ', $where);
+    }
+
+    // Обновление базы
+    if (!$stmt = db_get_prepare_stmt($link, $sql, $values)) {
+        return false;
+    }
+
+    mysqli_stmt_execute($stmt);
+
+    $updated_rows = mysqli_affected_rows($link);
+    
+    return $updated_rows;
 }
