@@ -125,15 +125,15 @@ function getRemainingTime()
  * @param string $sql
  * @param array $values
  *
- * @return array
+ * @return array|bool
  */
-function queryDB(mysqli $link, string $sql, array $values = []) : array
+function queryDB(mysqli $link, string $sql, array $values = [])
 {
     $data = [];
     $stmt = db_get_prepare_stmt($link, $sql, $values);
 
     if (!$stmt) {
-        return $data;
+        return false;
     }
 
     mysqli_stmt_execute($stmt);
@@ -162,9 +162,7 @@ function queryDB(mysqli $link, string $sql, array $values = []) : array
  */
 function insertDataDB(mysqli $link, string $sql, array $values = [])
 {
-    $stmt = db_get_prepare_stmt($link, $sql, $values);
-
-    if (!$stmt) {
+    if (!$stmt = db_get_prepare_stmt($link, $sql, $values)) {
         return false;
     }
 
@@ -189,7 +187,7 @@ function insertDataDB(mysqli $link, string $sql, array $values = [])
  *
  * @return bool|int
  */
-function updateDataDB(mysqli $link, string $table_name, array $data, array $conditions = [])
+function updateDataDB(mysqli $link, string $table_name, array $data, array $conditions)
 {
     $set = [];
     $where = [];
@@ -213,18 +211,13 @@ function updateDataDB(mysqli $link, string $table_name, array $data, array $cond
     }
 
     // Обновление базы
-    $stmt = db_get_prepare_stmt($link, $sql, $values);
-    if (!$stmt) {
+    if (!$stmt = db_get_prepare_stmt($link, $sql, $values)) {
         return false;
     }
 
     mysqli_stmt_execute($stmt);
 
     $updated_rows = mysqli_affected_rows($link);
-
-    if ($updated_rows < 1) {
-        return false;
-    }
     
     return $updated_rows;
 }
