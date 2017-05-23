@@ -173,7 +173,8 @@ function insertDataDB(mysqli $link, string $sql, array $values = [])
     if ($last_id == 0) {
         return false;
     }
-    
+
+
     return $last_id;
 }
 
@@ -221,3 +222,47 @@ function updateDataDB(mysqli $link, string $table_name, array $data, array $cond
     
     return $updated_rows;
 }
+
+/**
+ * Принимает изображение из формы и в случае валидации записывает постоянный путь загруженному изображению.
+ *
+ * @param string $filename
+ *
+ * @return string
+ */
+function verifyAndUploadImage(string $filename) : string
+{
+    $img = '';
+
+    if (isset($_FILES[$filename]) && $_FILES[$filename]['error'] == 0) {
+        $original_name = $_FILES[$filename]['name'];
+        $temp_name = $_FILES[$filename]['tmp_name'];
+        $dir = 'img/';
+
+        $mimes = [
+            'jpg'  => 'image/jpeg',
+            'jpeg' => 'image/jpeg',
+            'png'  => 'image/png',
+            'gif'  => 'image/gif'
+        ];
+
+        $f_info = new finfo;
+        $file_info = $f_info->file($temp_name, FILEINFO_MIME_TYPE);
+
+        $check = array_search($file_info, $mimes, true);
+        $extension = pathinfo($original_name, PATHINFO_EXTENSION);
+        $allowed = array_keys($mimes);
+
+        // Проверка  соответствия MIME и заявленного расширения разрешенным, загрузка с новым именем в случае успеха
+        if ($check !== false && in_array($extension, $allowed)) {
+            $file_path = $dir.time().'.'.$check;
+            $uploaded = move_uploaded_file($temp_name, $file_path);
+        }
+
+        if (isset($uploaded) && $uploaded === true) {
+            $img =  $file_path;
+        }
+    }
+    return $img;
+}
+

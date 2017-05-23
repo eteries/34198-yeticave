@@ -3,7 +3,7 @@ CREATE TABLE users (
   reg_time DATETIME NOT NULL,
   username CHAR(255) UNIQUE NOT NULL,
   email CHAR(128) UNIQUE NOT NULL,
-  password CHAR(32) NOT NULL,
+  password CHAR(64) NOT NULL,
   avatar CHAR(255),
   contact_info TEXT(1024)
 );

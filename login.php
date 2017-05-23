@@ -2,7 +2,14 @@
 session_start();
 
 require_once 'functions.php';
-require_once 'userdata.php';
+require_once 'connect.php';
+require_once 'lots_data.php';
+
+$is_new_user = false;
+
+if (isset($_GET['welcome'])) {
+    $is_new_user = true;
+}
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $email = trim($_POST['email'] ?? '');
@@ -24,11 +31,11 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
      * Если данные введены без ошибок, сформировать пару e-mail/пароль для процедуры логина
      */
     if (empty($invalid_controls)) {
-        $check = array_search($email, array_column($users, 'email'), true);
+        $existing_user = queryDB($link, 'SELECT * FROM users WHERE email = ?', ['email' => $email]);
 
         // Если впользователь с этим e-mail находится, то для авторизации сверяется пароль
-        if ($check !== false) {
-            $this_user = $users[$check];
+        if (!empty($existing_user)) {
+            $this_user = $existing_user[0];
             $verify = password_verify($password, $this_user['password']);
 
             if ($verify === true) {
@@ -49,6 +56,6 @@ echo renderTemplate('templates/top.php', ['html_title' => 'Вход']);
 echo renderTemplate('templates/header.php');
 
 echo renderTemplate('templates/nav.php');
-echo renderTemplate('templates/login-form.php', compact('invalid_controls'));
+echo renderTemplate('templates/login-form.php', compact('invalid_controls', 'is_new_user'));
 
 echo renderTemplate('templates/footer.php');

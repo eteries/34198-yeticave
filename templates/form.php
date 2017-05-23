@@ -14,9 +14,10 @@
             <label for="category">Категория</label>
             <select id="category" name="category" required>
                 <option>Выберите категорию</option>
-                <?php foreach ($categories as $category_name) : ?>
-                    <option <?= (isset($_POST['category']) && $_POST['category'] == $category_name) ? 'selected' : ''?>>
-                        <?= $category_name ?>
+                <?php foreach ($categories as $category) : ?>
+                    <option <?= (isset($_POST['category']) &&
+                        $_POST['category'] == $category['id']) ? 'selected' : ''?>
+                        value=<?= $category['id'] ?>><?= $category['title'] ?>
                     </option>
                 <?php endforeach; ?>
             </select>
