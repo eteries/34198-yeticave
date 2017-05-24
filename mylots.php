@@ -1,37 +1,26 @@
 <?php
 session_start();
+if (!isset($_SESSION['user'])) {
+    header('HTTP/1.1 403 Forbidden');
+    exit;
+}
 
 require_once 'functions.php';
-require_once 'lots_data.php';
+require_once 'connect.php';
 
-$my_lots = [];
+$this_user_lots = [];
+$this_user_id = $_SESSION['user']['id'];
+$categories = findCategories($link);
 
-/**
- * Если есть ставки, данные "моих лотов" собираются из информации о ставках и соответствующих им лотов
- */
-if (isset($_COOKIE['my_bids'])) {
-    $my_bids = json_decode($_COOKIE['my_bids'], true);
-
-    foreach ($my_bids as $my_bid) {
-        $id = $my_bid['id'];
-
-        if (isset($lots[$id])) {
-            $my_lots[] = [
-                'id' => $id,
-                'title' => $lots[$id]['title'],
-                'img' => $lots[$id]['img'],
-                'category' => $lots[$id]['category'],
-                'posted' => $my_bid['time'],
-                'cost' => $my_bid['cost']
-            ];
-        }
-    }
-}
+$this_user_lots = findLotsWithUserBids($link, $this_user_id);
+array_walk($this_user_lots, function(&$lot) {
+    $lot['placement_date'] = formatElapsedTime(strtotime($lot['placement_date']));
+});
 
 echo renderTemplate('templates/top.php', ['html_title' => 'Мои ставки']);
 echo renderTemplate('templates/header.php');
 
 echo renderTemplate('templates/nav.php');
-echo renderTemplate('templates/my-lots.php', compact('my_lots'));
+echo renderTemplate('templates/my-lots.php', compact('this_user_lots'));
 
-echo renderTemplate('templates/footer.php');
+echo renderTemplate('templates/footer.php', compact('categories'));

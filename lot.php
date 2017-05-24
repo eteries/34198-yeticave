@@ -2,7 +2,7 @@
 session_start();
 
 require_once 'functions.php';
-require_once 'lots_data.php';
+require_once 'connect.php';
 
 if (!filter_input(INPUT_GET, 'id', FILTER_VALIDATE_INT)) {
     header('HTTP/1.1 404 Not Found');
@@ -10,32 +10,47 @@ if (!filter_input(INPUT_GET, 'id', FILTER_VALIDATE_INT)) {
 }
 
 $id = isset($_GET['id']) ? (int) $_GET['id'] : null;
+$lots = findLots($link);
 
-if (!isset($lots[$id])) {
+foreach ($lots as $item) {
+    if ($item['id'] == $id) {
+        $lot = $item;
+        break;
+    }
+}
+
+if (!isset($lot)) {
     header('HTTP/1.1 404 Not Found');
     exit;
 }
 
-$lot = $lots[$id];
-$lot['min'] = $lot['min'] ??  $lot['price']+1;
+$lot['price'] = $lot['starting_price'];
+$lot['remaining_time'] = 'Торги завершены';
+$lot_is_active = false;
+$categories = findCategories($link);
+$active_lots = findActiveLots($link);
 
-/**
- * Прочитать существующие ставки и определить в них место текущего лота (null в случае отсутствия)
- */
-$existing_bids = [];
-$my_lots_id = null;
-$error = '';
-
-if (isset($_COOKIE['my_bids'])) {
-    $existing_bids = json_decode($_COOKIE['my_bids'], true);
-
-    foreach ($existing_bids as $index => $existing_bid) {
-        if ($existing_bid['id'] == $id) {
-            $my_lots_id = $index;
-            break;
-        }
+foreach ($active_lots as $item) {
+    if ($item['id'] == $id) {
+        $lot['active'] = true;
+        $lot['price'] = $lot['max'] ?? $lot['starting_price'];
+        $lot['min'] = $lot['bid_step'] ? $lot['price'] + $lot['bid_step'] : $lot['price']+1;
+        $lot['remaining_time'] = getRemainingTime();
     }
 }
+
+$this_user_bids = [];
+if (isset($_SESSION['user'])) {
+    $this_user_bids = findBidsByUserAndLot($link, $_SESSION['user']['id'], $id);
+}
+
+$this_lot_bids = findBidsByLot($link, $id);
+
+array_walk($this_lot_bids, function(&$bid) {
+    $bid['placement_date'] = formatElapsedTime(strtotime($bid['placement_date']));
+});
+
+$error = '';
 
 /**
  * Если ценовое предложение сделано, сформировать ставку и проверить. В случае успеха добавить к существующим ставкам.
@@ -50,8 +65,14 @@ if (isset($_POST['cost'])) {
     if (!filter_var($new_bid['cost'], FILTER_VALIDATE_INT, ['options' => ['min_range'=>$lot['min']]])) {
         $error = 'Ставка должна быть не меньше '.$lot['min'];
     } else {
-        $existing_bids[] = $new_bid;
-        setcookie('my_bids', json_encode($existing_bids), strtotime('+1 year'));
+        $values = [
+            'bid_amount' => $new_bid['cost'],
+            'bid_author' => $_SESSION['user']['id'],
+            'bid_lot' => $new_bid['id']
+        ];
+
+        addBid($link, $values);
+
         header('location: /mylots.php');
         exit();
     }
@@ -63,7 +84,7 @@ echo renderTemplate('templates/header.php');
 echo renderTemplate('templates/nav.php');
 echo renderTemplate(
     'templates/lot.php',
-    compact('bets', 'lot', 'lot_time_remaining', 'error', 'existing_bids', 'my_lots_id')
+    compact('lot', 'error', 'this_lot_bids', 'this_user_bids')
 );
 
-echo renderTemplate('templates/footer.php');
+echo renderTemplate('templates/footer.php', compact('categories'));

@@ -1,6 +1,12 @@
+
 <form class="form container
       <?= !empty($invalid_controls) ? 'form--invalid' : '' ?>"
       action="/login.php" method="post" enctype="multipart/form-data">
+
+    <?php if ($is_new_user) : ?>
+        <p>Теперь вы можете войти, используя свой email и пароль.</p>
+    <?php endif; ?>
+
     <h2>Вход</h2>
     <div class="form__item <?= isset($invalid_controls['email']) ? 'form__item--invalid' : '' ?>">
         <label for="email">E-mail*</label>

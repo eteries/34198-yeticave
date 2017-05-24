@@ -6,10 +6,11 @@ if (!isset($_SESSION['user'])) {
 }
 
 require_once 'functions.php';
-require_once 'lots_data.php';
+require_once 'connect.php';
 
 $lot = [];
 $invalid_controls = [];
+$categories = findCategories($link);
 
 /**
  * Сформировать массив не валидных полей, если таковые найдутся.
@@ -28,51 +29,34 @@ foreach ($_POST as $name => $value) {
     if (($name == 'lot-rate' || $name == 'lot-step') && !filter_var($value, FILTER_VALIDATE_INT)) {
         $invalid_controls[$name] = 'Введите число';
     }
-}
 
-/**
- * Загрузить, проверить изображение и в случае успеха
- */
-if (isset($_FILES['photo2']) && $_FILES['photo2']['error'] == 0) {
-    $original_name = $_FILES['photo2']['name'];
-    $temp_name = $_FILES['photo2']['tmp_name'];
-    $dir = 'img/';
-
-    $mimes = [
-        'jpg'  => 'image/jpeg',
-        'jpeg' => 'image/jpeg',
-        'png'  => 'image/png',
-        'gif'  => 'image/gif'
-    ];
-
-    $f_info = new finfo;
-    $file_info = $f_info->file($temp_name, FILEINFO_MIME_TYPE);
-
-    $check = array_search($file_info, $mimes, true);
-    $extension = pathinfo($original_name, PATHINFO_EXTENSION);
-    $allowed = array_keys($mimes);
-
-    // Проверка  соответствия MIME и заявленного расширения разрешенным, загрузка с новым именем в случае успеха
-    if ($check !== false && in_array($extension, $allowed)) {
-        $file_path = $dir.time().'.'.$check;
-        $uploaded = move_uploaded_file($temp_name, $file_path);
-    }
-
-    if (isset($uploaded) && $uploaded === true) {
-        $img = $file_path;
+    if ($name == 'lot-date' && (strtotime($value) < time() || strtotime($value) > strtotime('+1 month'))) {
+        $invalid_controls[$name] = 'Выберите дату в течение ближайшего месяца';
     }
 }
 
+$img = verifyAndUploadImage('photo2');
+
 /**
- * Если данные введены без ошибок, сформировать новый лот.
+ * Если данные введены без ошибок, сформировать новый лот, добавить в БД и переключиться на страницу этого лота
  */
 if (empty($invalid_controls) && !empty($_POST)) {
-    $lot['title'] = trim($_POST['lot-name'] ?? '');
-    $lot['category'] = $_POST['category'] ?? '';
-    $lot['price'] = trim($_POST['lot-rate'] ?? '');
-    $lot['min'] = (int) trim($_POST['lot-step'] ?? '') + (int) $lot['price'];
-    $lot['description'] = trim($_POST['message'] ?? '');
-    $lot['img'] = $img ?? 'img/logo.svg';
+    $ending = date_create(trim($_POST['lot-date']));
+
+    $lot['title'] = trim($_POST['lot-name']);
+    $lot['category'] = $_POST['category'];
+    $lot['price'] = trim($_POST['lot-rate']);
+    $lot['step'] = (int) trim($_POST['lot-step']);
+    $lot['description'] = trim($_POST['message']);
+    $lot['img'] = !empty($img) ? $img : 'img/logo.svg';
+    $lot['ending'] = date_format($ending, 'Y-m-d H:i:s');
+    $lot['author_id'] = $_SESSION['user']['id'];
+
+
+    if ($id = addLot($link, $lot)) {
+        header('location: /lot.php?id='.$id);
+        exit();
+    }
 }
 
 echo renderTemplate('templates/top.php', ['html_title' => 'Добавление лота']);
@@ -80,10 +64,6 @@ echo renderTemplate('templates/header.php');
 
 echo renderTemplate('templates/nav.php');
 
-if (empty($lot)) {
-    echo renderTemplate('templates/form.php', compact('invalid_controls', 'categories'));
-} else {
-    echo renderTemplate('templates/lot.php', compact('bets', 'lot', 'lot_time_remaining'));
-}
+echo renderTemplate('templates/form.php', compact('invalid_controls', 'categories'));
 
-echo renderTemplate('templates/footer.php');
+echo renderTemplate('templates/footer.php', compact('categories'));

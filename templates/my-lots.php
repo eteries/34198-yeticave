@@ -1,27 +1,29 @@
 <section class="rates container">
     <h2>Мои ставки</h2>
-    <?php if (empty($my_lots)) : ?>
+    <?php if (empty($this_user_lots)) : ?>
         <p>Вы пока не делали ставок на существующие лоты.</p>
     <?php else : ?>
         <table class="rates__list">
-            <?php foreach ($my_lots as $my_lot) : ?>
+            <?php foreach ($this_user_lots as $lot) : ?>
                 <tr class="rates__item">
                     <td class="rates__info">
                         <div class="rates__img">
-                          <img src="<?= $my_lot['img'] ?>" width="54" height="40" alt="<?= $my_lot['title'] ?>">
+                          <img src="<?= $lot['picture'] ?>" width="54" height="40" alt="<?= $lot['title'] ?>">
                         </div>
-                        <h3 class="rates__title"><a href="/lot.php?id=<?= $my_lot['id'] ?>">
-                            2014 Rossignol District Snowboard</a>
+                        <h3 class="rates__title">
+                            <a href="/lot.php?id=<?= $lot['id'] ?>">
+                                <?= $lot['title'] ?>
+                            </a>
                         </h3>
                     </td>
                     <td class="rates__category">
-                        <?= $my_lot['category'] ?>
+                        <?= $lot['category'] ?>
                     </td>
                     <td class="rates__price">
-                        <?= $my_lot['cost'] ?> р
+                        <?= $lot['price'] ?> р
                     </td>
                     <td class="rates__time">
-                        <?= formatElapsedTime($my_lot['posted']); ?>
+                        <?= $lot['placement_date']; ?>
                     </td>
                 </tr>
             <?php endforeach; ?>

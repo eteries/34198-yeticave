@@ -979,7 +979,7 @@ h2 {
   -webkit-align-self: flex-end;
   -ms-flex-item-align: end;
   align-self: flex-end;
-  width: 80px;
+  display: inline-block;
   margin-bottom: 19px;
   box-sizing: border-box;
 }
