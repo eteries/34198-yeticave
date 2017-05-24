@@ -3,9 +3,9 @@ session_start();
 
 require_once 'functions.php';
 require_once 'connect.php';
-require_once 'lots_data.php';
 
 $is_new_user = false;
+$categories = findCategories($link);
 
 if (isset($_GET['welcome'])) {
     $is_new_user = true;
@@ -31,7 +31,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
      * Если данные введены без ошибок, сформировать пару e-mail/пароль для процедуры логина
      */
     if (empty($invalid_controls)) {
-        $existing_user = queryDB($link, 'SELECT * FROM users WHERE email = ?', ['email' => $email]);
+        $existing_user = findUserByEmail($link, $email);
 
         // Если впользователь с этим e-mail находится, то для авторизации сверяется пароль
         if (!empty($existing_user)) {
@@ -58,4 +58,4 @@ echo renderTemplate('templates/header.php');
 echo renderTemplate('templates/nav.php');
 echo renderTemplate('templates/login-form.php', compact('invalid_controls', 'is_new_user'));
 
-echo renderTemplate('templates/footer.php');
+echo renderTemplate('templates/footer.php', compact('categories'));

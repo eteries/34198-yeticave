@@ -7,10 +7,10 @@ if (!isset($_SESSION['user'])) {
 
 require_once 'functions.php';
 require_once 'connect.php';
-require_once 'lots_data.php';
 
 $lot = [];
 $invalid_controls = [];
+$categories = findCategories($link);
 
 /**
  * Сформировать массив не валидных полей, если таковые найдутся.
@@ -52,25 +52,11 @@ if (empty($invalid_controls) && !empty($_POST)) {
     $lot['ending'] = date_format($ending, 'Y-m-d H:i:s');
     $lot['author_id'] = $_SESSION['user']['id'];
 
-    $sql = <<<SQL
-INSERT into lots(
-        title, 
-        lot_category, 
-        starting_price,
-        bid_step, 
-        description, 
-        picture,
-        ending_date,
-        author_id,
-        creation_date) 
-        values (?,?,?,?,?,?,?,?,NOW());
-SQL;
 
-    if ($id = insertDataDB($link, $sql, $lot)) {
+    if ($id = addLot($link, $lot)) {
         header('location: /lot.php?id='.$id);
         exit();
     }
-
 }
 
 echo renderTemplate('templates/top.php', ['html_title' => 'Добавление лота']);

@@ -266,3 +266,209 @@ function verifyAndUploadImage(string $filename) : string
     return $img;
 }
 
+/**
+ * Находит в БД все категории.
+ *
+ * @param mysqli $link
+ *
+ * @return array|bool
+ */
+function findCategories(mysqli $link) {
+    return queryDB($link, 'SELECT * from categories;');
+}
+
+/**
+ * Находит в БД всю информацию, необходимую для вывода всех лотов.
+ *
+ * @param mysqli $link
+ *
+ * @return array|bool
+ */
+function findLots(mysqli $link) {
+    $sql = <<<SQL
+SELECT lots.*, count(bids.id) as count, 
+       max(bids.bid_amount) as max, categories.title as category
+FROM lots LEFT JOIN bids ON lots.id = bids.bid_lot
+          JOIN categories ON lots.lot_category = categories.id
+GROUP BY lots.id
+ORDER BY lots.creation_date DESC;
+SQL;
+
+    return queryDB($link, $sql);
+}
+
+/**
+ * Находит в БД всю информацию, необходимую для вывода только открытых лотов.
+ *
+ * @param mysqli $link
+ *
+ * @return array|bool
+ */
+function findActiveLots(mysqli $link) {
+    $sql = <<<SQL
+SELECT lots.id, lots.title, lots.starting_price, lots.picture, count(bids.id) as count, 
+       max(bids.bid_amount) as max, categories.title as category
+FROM lots LEFT JOIN bids ON lots.id = bids.bid_lot
+          JOIN categories ON lots.lot_category = categories.id
+WHERE ending_date > NOW()
+GROUP BY lots.id
+ORDER BY lots.creation_date DESC;
+SQL;
+
+    return queryDB($link, $sql);
+}
+
+/**
+ * Находит в БД пользователя по адресу эл. почты.
+ *
+ * @param mysqli $link
+ * @param string $email
+ *
+ * @return array|bool
+ */
+function findUserByEmail(mysqli $link, string $email) {
+    return queryDB($link, 'SELECT * FROM users WHERE email = ?', ['email' => $email]);
+}
+
+/**
+ * Находит в БД ставки для указанного лота.
+ *
+ * @param mysqli $link
+ * @param int $lot_id
+ *
+ * @return array|bool
+ */
+function findBidsByLot(mysqli $link, int $lot_id) {
+    return queryDB(
+        $link,
+        'SELECT bids.bid_amount,
+    bids.placement_date, 
+    users.username
+    FROM bids LEFT JOIN users ON bids.bid_author = users.id 
+    where bids.bid_lot = ? 
+    GROUP BY bids.id;',
+        ['bid_lot' => $lot_id]
+    );
+}
+
+/**
+ * Добавляет в БД нового пользователя.
+ *
+ * @param mysqli $link
+ * @param array $data
+ *
+ * @return bool
+ */
+function addUser(mysqli $link, array $data) {
+    $sql = <<<SQL
+INSERT into users (
+        email, 
+        password, 
+        username, 
+        contact_info, 
+        avatar, 
+        reg_time) 
+        values (?,?,?,?,?,NOW());
+SQL;
+
+    $id = insertDataDB($link, $sql, $data);
+
+    if (!$id) {
+        return false;
+    }
+
+    return true;
+}
+
+/**
+ * Добавляет в БД новую ставку.
+ *
+ * @param mysqli $link
+ * @param array $data
+ *
+ * @return bool
+ */
+function addBid(mysqli $link, array $data) {
+    $sql = 'INSERT into bids (bid_amount, bid_author, bid_lot, placement_date) VALUES (?,?,?, NOW());';
+
+    $id = insertDataDB($link, $sql, $data);
+
+    if (!$id) {
+        return false;
+    }
+
+    return true;
+}
+
+/**
+ * Добавляет в БД новый лот и возвращает идентификатор в случае успеха.
+ *
+ * @param mysqli $link
+ * @param array $data
+ *
+ * @return bool|int
+ */
+function addLot(mysqli $link, array $data) {
+    $sql = <<<SQL
+INSERT into lots(
+        title, 
+        lot_category, 
+        starting_price,
+        bid_step, 
+        description, 
+        picture,
+        ending_date,
+        author_id,
+        creation_date) 
+        values (?,?,?,?,?,?,?,?,NOW());
+SQL;
+
+    $id = insertDataDB($link, $sql, $data);
+
+    if (!$id) {
+        return false;
+    }
+
+    return $id;
+}
+
+
+/**
+ * Находит лоты, в торгах которых принимал участие пользователь с данным id.
+ *
+ * @param mysqli $link
+ * @param int $user_id
+ *
+ * @return array|bool
+ */
+function findLotsWithUserBids(mysqli $link, int $user_id) {
+    $sql = <<<SQL
+SELECT lots.id, lots.title, lots.picture, bids.placement_date,
+       max(bids.bid_amount) as price, categories.title as category
+FROM lots LEFT JOIN bids ON lots.id = bids.bid_lot
+          JOIN categories ON lots.lot_category = categories.id
+WHERE bid_author = ?
+GROUP BY bids.id;
+SQL;
+
+    return queryDB($link, $sql, ['author_id' => $user_id]);
+}
+
+/**
+ * Находит ставки указанного пользователя, сделанные для указанного лота.
+ *
+ * @param mysqli $link
+ * @param int $user_id
+ * @param int $lot_id
+ *
+ * @return array|bool
+ */
+function findBidsByUserAndLot(mysqli $link, int $user_id, int $lot_id) {
+    return queryDB(
+        $link,
+        'select max(bid_amount) as user_max 
+        FROM bids where bid_author = ? AND bid_lot = ? AND bid_amount IS NOT null GROUP BY id;',
+        ['bid_author' => $user_id, 'bid_lot' => $lot_id]
+    );
+}
+

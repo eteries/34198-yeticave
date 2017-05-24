@@ -6,23 +6,13 @@ if (!isset($_SESSION['user'])) {
 }
 
 require_once 'functions.php';
-require_once 'lots_data.php';
 require_once 'connect.php';
 
 $this_user_lots = [];
 $this_user_id = $_SESSION['user']['id'];
+$categories = findCategories($link);
 
-$this_user_lots_sql = <<<SQL
-SELECT lots.id, lots.title, lots.picture, bids.placement_date,
-       max(bids.bid_amount) as price, categories.title as category
-FROM lots LEFT JOIN bids ON lots.id = bids.bid_lot
-          JOIN categories ON lots.lot_category = categories.id
-WHERE bid_author = ?
-GROUP BY bids.id;
-SQL;
-
-$this_user_lots = queryDB($link, $this_user_lots_sql, ['author_id' => $this_user_id]);
-
+$this_user_lots = findLotsWithUserBids($link, $this_user_id);
 array_walk($this_user_lots, function(&$lot) {
     $lot['placement_date'] = formatElapsedTime(strtotime($lot['placement_date']));
 });

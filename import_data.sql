@@ -32,12 +32,12 @@ VALUES
 
 INSERT INTO lots (title, lot_category, picture, starting_price, bid_step, creation_date, ending_date, author_id)
 VALUES
-  ('2014 Rossignol District Snowboard', 1, 'img/lot-1.jpg', '10999', NULL, '2017-05-10 03:20:12', '2017-05-14 5:23:12', 1),
-  ('DC Ply Mens 2016/2017 Snowboard', 1, 'img/lot-2.jpg', '159999', 1000, '2017-05-10 05:46:12', '2017-05-20 17:23:43', 1),
-  ('Крепления Union Contact 2015 года размер L/XL', 3, 'img/lot-3.jpg', '8000', 10, '2017-05-11 11:13:12', '2017-05-9 2:23:55', 1),
-  ('Ботинки для сноуборда DC Mutiny Charocal', 3, 'img/lot-4.jpg', '10999', 300, '2017-05-12 05:15:28', '2017-05-30 11:15:21', 3),
-  ('Куртка для сноуборда DC Mutiny Charocal', 4, 'img/lot-5.jpg', '7500', 500, '2017-05-12 07:32:43', '2017-05-11 18:53:14', 3),
-  ('Маска Oakley Canopy', 5, 'img/lot-6.jpg', '5400', 1000, '2017-05-14 0:23:12', '2017-05-25 10:13:40', 1);
+  ('2014 Rossignol District Snowboard', 1, 'img/lot-1.jpg', '10999', NULL, '2017-05-10 03:20:12', '2017-05-29 5:23:12', 1),
+  ('DC Ply Mens 2016/2017 Snowboard', 1, 'img/lot-2.jpg', '159999', 1000, '2017-05-10 05:46:12', '2017-05-27 17:23:43', 1),
+  ('Крепления Union Contact 2015 года размер L/XL', 3, 'img/lot-3.jpg', '8000', 10, '2017-05-11 11:13:12', '2017-05-28 2:23:55', 1),
+  ('Ботинки для сноуборда DC Mutiny Charocal', 3, 'img/lot-4.jpg', '10999', 300, '2017-05-12 05:15:28', '2017-05-20 11:15:21', 3),
+  ('Куртка для сноуборда DC Mutiny Charocal', 4, 'img/lot-5.jpg', '7500', 500, '2017-05-12 07:32:43', '2017-06-11 18:53:14', 3),
+  ('Маска Oakley Canopy', 5, 'img/lot-6.jpg', '5400', 1000, '2017-05-14 0:23:12', '2017-06-25 10:13:40', 1);
 
 INSERT INTO bids (placement_date, bid_amount, bid_author, bid_lot)
 VALUES

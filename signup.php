@@ -3,10 +3,10 @@ session_start();
 
 require_once 'functions.php';
 require_once 'connect.php';
-require_once 'lots_data.php';
 
 $user = [];
 $invalid_controls = [];
+$categories = findCategories($link);
 
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
@@ -24,7 +24,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             $invalid_controls[$name] = 'Введите email';
         }
 
-        if ($name == 'email' && !empty(queryDB($link, 'SELECT id FROM users WHERE email = ?', ['email' => $value]))) {
+        if ($name == 'email' && !empty(findUserByEmail($link, $value))) {
             $invalid_controls[$name] = 'Email уже зарегистрирован';
         }
     }
@@ -41,18 +41,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $user['contact_info'] = trim($_POST['message'] ?? '');
         $user['avatar'] = !empty($img) ? $img : 'img/user.jpg';
 
-        $sql = <<<SQL
-INSERT into users (
-        email, 
-        password, 
-        username, 
-        contact_info, 
-        avatar, 
-        reg_time) 
-        values (?,?,?,?,?,NOW());
-SQL;
+        addUser($link, $user);
 
-        insertDataDB($link, $sql, $user);
         $_SESSION = [];
         header('location: /login.php?welcome=true');
         exit();

@@ -3,7 +3,6 @@ session_start();
 
 require_once 'functions.php';
 require_once 'connect.php';
-require_once 'lots_data.php';
 
 if (!filter_input(INPUT_GET, 'id', FILTER_VALIDATE_INT)) {
     header('HTTP/1.1 404 Not Found');
@@ -11,10 +10,12 @@ if (!filter_input(INPUT_GET, 'id', FILTER_VALIDATE_INT)) {
 }
 
 $id = isset($_GET['id']) ? (int) $_GET['id'] : null;
+$lots = findLots($link);
 
 foreach ($lots as $item) {
     if ($item['id'] == $id) {
         $lot = $item;
+        break;
     }
 }
 
@@ -26,36 +27,24 @@ if (!isset($lot)) {
 $lot['price'] = $lot['starting_price'];
 $lot['remaining_time'] = 'Торги завершены';
 $lot_is_active = false;
+$categories = findCategories($link);
+$active_lots = findActiveLots($link);
 
 foreach ($active_lots as $item) {
     if ($item['id'] == $id) {
         $lot['active'] = true;
         $lot['price'] = $lot['max'] ?? $lot['starting_price'];
         $lot['min'] = $lot['bid_step'] ? $lot['price'] + $lot['bid_step'] : $lot['price']+1;
-        $lot['remaining_time'] = $lot_time_remaining;
+        $lot['remaining_time'] = getRemainingTime();
     }
 }
 
 $this_user_bids = [];
 if (isset($_SESSION['user'])) {
-    $this_user_bids = queryDB(
-        $link,
-        'select max(bid_amount) as user_max 
-        FROM bids where bid_author = ? AND bid_lot = ? AND bid_amount IS NOT null GROUP BY id;',
-        ['bid_author' => 2, 'bid_lot' => $id]
-    );
+    $this_user_bids = findBidsByUserAndLot($link, $_SESSION['user']['id'], $id);
 }
 
-$this_lot_bids = queryDB(
-    $link,
-    'SELECT bids.bid_amount,
-    bids.placement_date, 
-    users.username
-    FROM bids LEFT JOIN users ON bids.bid_author = users.id 
-    where bids.bid_lot = ? 
-    GROUP BY bids.id;',
-    ['bid_lot' => $id]
-);
+$this_lot_bids = findBidsByLot($link, $id);
 
 array_walk($this_lot_bids, function(&$bid) {
     $bid['placement_date'] = formatElapsedTime(strtotime($bid['placement_date']));
@@ -76,13 +65,13 @@ if (isset($_POST['cost'])) {
     if (!filter_var($new_bid['cost'], FILTER_VALIDATE_INT, ['options' => ['min_range'=>$lot['min']]])) {
         $error = 'Ставка должна быть не меньше '.$lot['min'];
     } else {
-        $sql = 'INSERT into bids (bid_amount, bid_author, bid_lot, placement_date) VALUES (?,?,?, NOW());';
         $values = [
             'bid_amount' => $new_bid['cost'],
             'bid_author' => $_SESSION['user']['id'],
             'bid_lot' => $new_bid['id']
         ];
-        insertDataDB($link, $sql, $values);
+
+        addBid($link, $values);
 
         header('location: /mylots.php');
         exit();
